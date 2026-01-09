@@ -686,76 +686,145 @@ body {
   margin-bottom: 48px;
 }
 
-/* Command Carousel */
-.commands-carousel {
+/* Commands Spinning Wheel */
+.commands-wheel {
   max-width: 700px;
-  margin: 0 auto 40px;
+  margin: 0 auto;
+  position: relative;
+  height: 320px;
+  overflow: hidden;
 }
 
-.command-display {
-  background: linear-gradient(135deg, var(--bg-card) 0%, #292218 100%);
-  border: 2px solid var(--primary);
-  border-radius: 16px;
-  padding: 32px 40px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 20px;
-  color: var(--primary);
-  min-height: 100px;
+.wheel-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 80px;
+  overflow: visible;
+}
+
+.wheel-track {
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.wheel-card {
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.command-display.animating {
-  opacity: 0;
-  transform: translateY(-10px);
-}
-
-.command-dots {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-top: 20px;
-}
-
-.dot {
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: var(--bg-card);
-  border: 1px solid #44403c;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.dot.active {
-  background: var(--primary);
-  border-color: var(--primary);
-  transform: scale(1.2);
-}
-
-.dot:hover:not(.active) {
-  border-color: var(--primary);
-}
-
-.commands-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 16px;
-  max-width: 900px;
-  margin: 0 auto;
-}
-
-.command {
+  padding: 16px 32px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 16px;
+  color: var(--text-secondary);
   background: var(--bg-card);
   border: 1px solid #292524;
-  border-radius: 100px;
-  padding: 12px 24px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 14px;
+  border-radius: 12px;
+  margin: 0 20px;
+  opacity: 0.4;
+  transform: scale(0.9);
+  transition: all 0.4s ease;
+  text-align: center;
+}
+
+.wheel-card.active {
+  opacity: 1;
+  transform: scale(1);
   color: var(--primary);
+  border-color: var(--primary);
+  background: linear-gradient(135deg, var(--bg-card) 0%, #292218 100%);
+  box-shadow: 0 0 30px rgba(245, 158, 11, 0.2);
+}
+
+.wheel-fade-top,
+.wheel-fade-bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100px;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.wheel-fade-top {
+  top: 0;
+  background: linear-gradient(to bottom, var(--bg-dark) 0%, transparent 100%);
+}
+
+.wheel-fade-bottom {
+  bottom: 0;
+  background: linear-gradient(to top, var(--bg-dark) 0%, transparent 100%);
+}
+
+/* Twitter/X CTA Section */
+.twitter-cta-section {
+  padding: 60px 24px;
+  background: linear-gradient(135deg, #0c0a09 0%, #1a1512 100%);
+}
+
+.twitter-cta {
+  max-width: 700px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 32px 40px;
+  background: var(--bg-card);
+  border: 2px solid #292524;
+  border-radius: 16px;
+  transition: border-color 0.3s;
+}
+
+.twitter-cta:hover {
+  border-color: var(--primary);
+}
+
+.twitter-icon {
+  width: 56px;
+  height: 56px;
+  background: var(--text-primary);
+  color: var(--bg-dark);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+
+.twitter-text {
+  flex: 1;
+}
+
+.twitter-text h3 {
+  font-size: 20px;
+  margin-bottom: 4px;
+}
+
+.twitter-text p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.twitter-btn {
+  background: var(--primary);
+  color: #000;
+  padding: 14px 28px;
+  border-radius: 100px;
+  font-weight: 700;
+  font-size: 16px;
+  text-decoration: none;
+  transition: transform 0.2s, box-shadow 0.2s;
+  white-space: nowrap;
+}
+
+.twitter-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4);
 }
 
 /* Footer */
@@ -898,5 +967,26 @@ body {
     flex-wrap: wrap;
     justify-content: center;
     gap: 16px;
+  }
+
+  .commands-wheel {
+    height: 280px;
+  }
+
+  .wheel-card {
+    font-size: 13px;
+    padding: 12px 16px;
+    margin: 0 12px;
+    height: 70px;
+  }
+
+  .twitter-cta {
+    flex-direction: column;
+    text-align: center;
+    padding: 24px;
+  }
+
+  .twitter-text {
+    text-align: center;
   }
 }

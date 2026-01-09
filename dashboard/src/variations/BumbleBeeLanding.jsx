@@ -548,29 +548,47 @@ function BumbleBeeLanding() {
         </div>
       </section>
 
-      {/* Commands Section with Animation */}
+      {/* Commands Section with Spinning Wheel */}
       <section className="commands-section">
         <h2>{t.commandsTitle}</h2>
 
-        <div className="commands-carousel">
-          <div className={`command-display ${isAnimating ? 'animating' : ''}`}>
-            {t.commands[currentCommandIndex]}
+        <div className="commands-wheel">
+          <div className="wheel-container">
+            <div
+              className="wheel-track"
+              style={{ transform: `translateY(-${currentCommandIndex * 80}px)` }}
+            >
+              {t.commands.map((cmd, i) => (
+                <div
+                  key={i}
+                  className={`wheel-card ${i === currentCommandIndex ? 'active' : ''}`}
+                >
+                  {cmd}
+                </div>
+              ))}
+            </div>
           </div>
-          <div className="command-dots">
-            {t.commands.map((_, i) => (
-              <span
-                key={i}
-                className={`dot ${i === currentCommandIndex ? 'active' : ''}`}
-                onClick={() => setCurrentCommandIndex(i)}
-              />
-            ))}
-          </div>
+          <div className="wheel-fade-top"></div>
+          <div className="wheel-fade-bottom"></div>
         </div>
+      </section>
 
-        <div className="commands-list">
-          {t.commands.slice(0, 4).map((cmd, i) => (
-            <div className="command" key={i}>{cmd}</div>
-          ))}
+      {/* Follow on X CTA */}
+      <section className="twitter-cta-section">
+        <div className="twitter-cta">
+          <div className="twitter-icon">X</div>
+          <div className="twitter-text">
+            <h3>{lang === 'en' ? 'Follow us on X' : 'Siga-nos no X'}</h3>
+            <p>{lang === 'en' ? 'Get updates, tips, and behind-the-scenes' : 'Receba novidades, dicas e bastidores'}</p>
+          </div>
+          <a
+            href="https://x.com/b2beetech"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="twitter-btn"
+          >
+            @b2beetech
+          </a>
         </div>
       </section>
 
