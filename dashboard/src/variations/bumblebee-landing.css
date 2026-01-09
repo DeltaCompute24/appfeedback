@@ -26,6 +26,42 @@ body {
 
 .landing {
   min-height: 100vh;
+  position: relative;
+}
+
+/* Language Toggle */
+.language-toggle {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  display: flex;
+  gap: 4px;
+  background: var(--bg-card);
+  border: 1px solid #292524;
+  border-radius: 8px;
+  padding: 4px;
+  z-index: 1000;
+}
+
+.lang-btn {
+  padding: 8px 16px;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.lang-btn.active {
+  background: var(--primary);
+  color: #000;
+}
+
+.lang-btn:hover:not(.active) {
+  color: var(--text-primary);
 }
 
 /* Hero Section */
@@ -46,18 +82,18 @@ body {
 }
 
 .bee-icon {
-  width: 80px;
-  height: 80px;
-  background: var(--primary);
-  border-radius: 20px;
+  width: 100px;
+  height: 100px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-size: 40px;
-  font-weight: 700;
-  color: #000;
   margin-bottom: 24px;
-  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3);
+}
+
+.bee-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 8px 32px rgba(245, 158, 11, 0.3));
 }
 
 .hero h1 {
@@ -650,6 +686,59 @@ body {
   margin-bottom: 48px;
 }
 
+/* Command Carousel */
+.commands-carousel {
+  max-width: 700px;
+  margin: 0 auto 40px;
+}
+
+.command-display {
+  background: linear-gradient(135deg, var(--bg-card) 0%, #292218 100%);
+  border: 2px solid var(--primary);
+  border-radius: 16px;
+  padding: 32px 40px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 20px;
+  color: var(--primary);
+  min-height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.command-display.animating {
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+.command-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid #44403c;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.dot.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  transform: scale(1.2);
+}
+
+.dot:hover:not(.active) {
+  border-color: var(--primary);
+}
+
 .commands-list {
   display: flex;
   flex-wrap: wrap;
@@ -690,19 +779,34 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
-  color: var(--text-secondary);
 }
 
 .bee-icon-small {
-  width: 32px;
-  height: 32px;
-  background: var(--primary);
-  border-radius: 8px;
+  width: 40px;
+  height: 40px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 700;
-  color: #000;
+}
+
+.bee-svg-small {
+  width: 100%;
+  height: 100%;
+}
+
+.footer-brand-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.brand-name {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.brand-company {
+  font-size: 12px;
+  color: var(--text-secondary);
 }
 
 .footer-links {
@@ -713,14 +817,38 @@ body {
 .footer-links a {
   color: var(--text-secondary);
   text-decoration: none;
+  font-size: 14px;
 }
 
 .footer-links a:hover {
   color: var(--primary);
 }
 
+.footer-bottom {
+  max-width: 1200px;
+  margin: 16px auto 0;
+  padding-top: 16px;
+  border-top: 1px solid #292524;
+  text-align: center;
+}
+
+.footer-bottom p {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
 /* Responsive */
 @media (max-width: 640px) {
+  .language-toggle {
+    top: 12px;
+    right: 12px;
+  }
+
+  .lang-btn {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
   .hero h1 {
     font-size: 40px;
   }
@@ -745,5 +873,30 @@ body {
   .download-btn {
     width: 100%;
     justify-content: center;
+  }
+
+  .command-display {
+    font-size: 16px;
+    padding: 24px 20px;
+  }
+
+  .commands-list {
+    gap: 12px;
+  }
+
+  .command {
+    font-size: 12px;
+    padding: 10px 16px;
+  }
+
+  .footer-content {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .footer-links {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
   }
 }
