@@ -698,53 +698,47 @@ html, body {
   to { transform: rotate(360deg); }
 }
 
-/* Download Banner */
-.download-banner {
-  background: var(--gradient-primary);
-  padding: 12px 32px;
+/* Download Notice (subtle) */
+.download-notice {
+  background: var(--bg-secondary);
+  padding: 10px 32px;
   display: flex;
   justify-content: center;
-}
-
-.download-content {
-  display: flex;
   align-items: center;
-  gap: 16px;
-}
-
-.download-label {
-  color: #000;
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.download-btn {
-  padding: 8px 20px;
-  border-radius: 6px;
-  font-weight: 600;
+  gap: 6px;
   font-size: 13px;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.download-link {
+  color: var(--accent-primary);
   text-decoration: none;
+  font-weight: 600;
   transition: all 0.2s;
 }
 
-.download-btn.windows {
-  background: #0078d4;
-  color: white;
+.download-link:hover {
+  text-decoration: underline;
+  color: var(--accent-secondary);
 }
 
-.download-btn.windows:hover {
-  background: #106ebe;
-  transform: translateY(-1px);
+/* Language Toggle */
+.lang-toggle {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
 }
 
-.download-btn.mac {
-  background: #333;
-  color: white;
-}
-
-.download-btn.mac:hover {
-  background: #555;
-  transform: translateY(-1px);
+.lang-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .download-hint {

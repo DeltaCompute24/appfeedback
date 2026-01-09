@@ -18,6 +18,107 @@ const getInitialTheme = () => {
   return window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'
 }
 
+const getInitialLang = () => {
+  const saved = localStorage.getItem('bumblebee_feedback_lang')
+  if (saved) return saved
+  return navigator.language.startsWith('pt') ? 'pt' : 'en'
+}
+
+const translations = {
+  en: {
+    downloadNotice: "We're constantly improving! Make sure you have the",
+    latestVersion: "latest version",
+    featureRequests: "Feature Requests",
+    bugReports: "Bug Reports",
+    totalFeedback: "Total Feedback",
+    shipped: "Shipped",
+    contributors: "Contributors",
+    whatNext: "What should BumbleBee do next?",
+    squashBugs: "Help us squash bugs",
+    topRanked: "Top Ranked",
+    mostVotes: "Most Votes",
+    mostRecent: "Most Recent",
+    noFeatures: "No feature requests yet",
+    noBugs: "No bug reports yet",
+    beFirst: "Be the first to help shape BumbleBee!",
+    reportBug: "Report Bug",
+    shareIdea: "Share Idea",
+    idea: "Idea",
+    bug: "Bug",
+    platform: "Platform",
+    both: "Both",
+    title: "Title",
+    titlePlaceholderBug: "E.g.: App crashes when opening...",
+    titlePlaceholderIdea: "E.g.: Add calendar integration...",
+    whatHappened: "What happened?",
+    description: "Description",
+    descPlaceholderBug: "Describe the problem you encountered...",
+    descPlaceholderIdea: "Describe your idea for BumbleBee...",
+    stepsToReproduce: "Steps to reproduce (optional)",
+    stepsPlaceholder: "1. Opened the app\n2. Clicked on...\n3. App crashed",
+    nameOrX: "Your name or X/Twitter (optional)",
+    handlePlaceholder: "@yourhandle or your name",
+    submitting: "Submitting...",
+    submitBug: "Report Bug (+15 honey)",
+    submitIdea: "Submit Idea (+10 honey)",
+    topContributors: "Top Contributors",
+    noContributors: "No contributors yet",
+    submissions: "submissions",
+    howRanking: "How Ranking Works",
+    loading: "Loading...",
+    viewOnGithub: "View on GitHub",
+    bugReported: "Bug reported successfully!",
+    thanksFeedback: "Thanks for the feedback!",
+    comments: "comments",
+  },
+  pt: {
+    downloadNotice: "Estamos sempre melhorando! Certifique-se de ter a",
+    latestVersion: "versao mais recente",
+    featureRequests: "Pedidos de Recursos",
+    bugReports: "Relatorios de Bugs",
+    totalFeedback: "Total de Feedback",
+    shipped: "Entregues",
+    contributors: "Contribuidores",
+    whatNext: "O que o BumbleBee deveria fazer a seguir?",
+    squashBugs: "Ajude-nos a corrigir bugs",
+    topRanked: "Mais Bem Classificados",
+    mostVotes: "Mais Votos",
+    mostRecent: "Mais Recentes",
+    noFeatures: "Nenhum pedido de recurso ainda",
+    noBugs: "Nenhum relatorio de bug ainda",
+    beFirst: "Seja o primeiro a ajudar a moldar o BumbleBee!",
+    reportBug: "Reportar Bug",
+    shareIdea: "Compartilhar Ideia",
+    idea: "Ideia",
+    bug: "Bug",
+    platform: "Plataforma",
+    both: "Ambos",
+    title: "Titulo",
+    titlePlaceholderBug: "Ex: App trava ao abrir...",
+    titlePlaceholderIdea: "Ex: Adicionar integracao com calendario...",
+    whatHappened: "O que aconteceu?",
+    description: "Descricao",
+    descPlaceholderBug: "Descreva o problema que encontrou...",
+    descPlaceholderIdea: "Descreva sua ideia para o BumbleBee...",
+    stepsToReproduce: "Passos para reproduzir (opcional)",
+    stepsPlaceholder: "1. Abri o app\n2. Cliquei em...\n3. O app travou",
+    nameOrX: "Seu nome ou X/Twitter (opcional)",
+    handlePlaceholder: "@seuhandle ou seu nome",
+    submitting: "Enviando...",
+    submitBug: "Reportar Bug (+15 honey)",
+    submitIdea: "Enviar Ideia (+10 honey)",
+    topContributors: "Top Contribuidores",
+    noContributors: "Nenhum contribuidor ainda",
+    submissions: "envios",
+    howRanking: "Como Funciona o Ranking",
+    loading: "Carregando...",
+    viewOnGithub: "Ver no GitHub",
+    bugReported: "Bug reportado com sucesso!",
+    thanksFeedback: "Obrigado pelo feedback!",
+    comments: "comentarios",
+  }
+}
+
 function BumbleBeeApp() {
   const [activeTab, setActiveTab] = useState('wishlist')
   const [items, setItems] = useState([])
@@ -28,6 +129,7 @@ function BumbleBeeApp() {
   const [loading, setLoading] = useState(true)
   const [sortBy, setSortBy] = useState('rank')
   const [theme, setTheme] = useState(getInitialTheme)
+  const [lang, setLang] = useState(getInitialLang)
 
   const [formType, setFormType] = useState('wishlist')
   const [formTitle, setFormTitle] = useState('')
@@ -39,6 +141,13 @@ function BumbleBeeApp() {
   const [submitSuccess, setSubmitSuccess] = useState(null)
 
   const userId = getUserId()
+  const t = translations[lang]
+
+  const toggleLang = () => {
+    const newLang = lang === 'en' ? 'pt' : 'en'
+    setLang(newLang)
+    localStorage.setItem('bumblebee_feedback_lang', newLang)
+  }
 
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme)
@@ -227,6 +336,13 @@ function BumbleBeeApp() {
             <span>{userCredits?.credits_balance || 0} honey</span>
           </div>
           <button
+            className="lang-toggle"
+            onClick={toggleLang}
+            title={lang === 'en' ? 'Mudar para Portugues' : 'Switch to English'}
+          >
+            {lang.toUpperCase()}
+          </button>
+          <button
             className="theme-toggle"
             onClick={toggleTheme}
             title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
@@ -236,22 +352,14 @@ function BumbleBeeApp() {
         </div>
       </header>
 
-      <div className="download-banner">
-        <div className="download-content">
-          <span className="download-label">Baixar BumbleBee:</span>
-          <a
-            href="https://github.com/Delta-Compute/bumblebee/releases/latest/download/BumbleBee.exe"
-            className="download-btn windows"
-          >
-            Windows
-          </a>
-          <a
-            href="https://github.com/Delta-Compute/bumblebee/releases/latest/download/BumbleBee-macOS.dmg"
-            className="download-btn mac"
-          >
-            Mac
-          </a>
-        </div>
+      <div className="download-notice">
+        <span>{t.downloadNotice} </span>
+        <a
+          href="https://pub-5cec4c07c618467e97486ac887ce3606.r2.dev/latest/BumbleBee-macOS.dmg"
+          className="download-link"
+        >
+          {t.latestVersion}
+        </a>
       </div>
 
       <nav className="tabs">
@@ -259,14 +367,14 @@ function BumbleBeeApp() {
           className={`tab wishlist ${activeTab === 'wishlist' ? 'active' : ''}`}
           onClick={() => setActiveTab('wishlist')}
         >
-          Feature Requests
+          {t.featureRequests}
           <span className="tab-count">{stats?.wishlist_count || 0}</span>
         </button>
         <button
           className={`tab bug ${activeTab === 'bug' ? 'active' : ''}`}
           onClick={() => setActiveTab('bug')}
         >
-          Bug Reports
+          {t.bugReports}
           <span className="tab-count">{stats?.bug_count || 0}</span>
         </button>
       </nav>
@@ -276,30 +384,30 @@ function BumbleBeeApp() {
           <div className="stats-grid">
             <div className="stat-card">
               <div className="stat-value">{stats?.total_items || 0}</div>
-              <div className="stat-label">Total Feedback</div>
+              <div className="stat-label">{t.totalFeedback}</div>
             </div>
             <div className="stat-card">
               <div className="stat-value">{stats?.completed_count || 0}</div>
-              <div className="stat-label">Shipped</div>
+              <div className="stat-label">{t.shipped}</div>
             </div>
             <div className="stat-card">
               <div className="stat-value">{stats?.contributors_count || 0}</div>
-              <div className="stat-label">Contributors</div>
+              <div className="stat-label">{t.contributors}</div>
             </div>
           </div>
 
           <div className="feed-header">
             <h2 className="feed-title">
-              {activeTab === 'wishlist' ? 'What should BumbleBee do next?' : 'Help us squash bugs'}
+              {activeTab === 'wishlist' ? t.whatNext : t.squashBugs}
             </h2>
             <select
               className="sort-select"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
             >
-              <option value="rank">Top Ranked</option>
-              <option value="votes">Most Votes</option>
-              <option value="recent">Most Recent</option>
+              <option value="rank">{t.topRanked}</option>
+              <option value="votes">{t.mostVotes}</option>
+              <option value="recent">{t.mostRecent}</option>
             </select>
           </div>
 
@@ -313,9 +421,9 @@ function BumbleBeeApp() {
                 {activeTab === 'wishlist' ? 'B' : '!'}
               </div>
               <div className="empty-state-title">
-                No {activeTab === 'wishlist' ? 'feature requests' : 'bug reports'} yet
+                {activeTab === 'wishlist' ? t.noFeatures : t.noBugs}
               </div>
-              <p>Be the first to help shape BumbleBee!</p>
+              <p>{t.beFirst}</p>
             </div>
           ) : (
             <div className="items-list">
@@ -332,7 +440,7 @@ function BumbleBeeApp() {
                         {formatStatus(item.status)}
                       </span>
                       <span>{formatDate(item.created_at)}</span>
-                      <span>{item.comment_count || 0} comments</span>
+                      <span>{item.comment_count || 0} {t.comments}</span>
                       {item.x_handle && <span>@{item.x_handle}</span>}
                     </div>
                     <button
@@ -352,15 +460,15 @@ function BumbleBeeApp() {
         <aside className="sidebar">
           <div className="sidebar-section">
             <h3 className="sidebar-title">
-              {formType === 'bug' ? 'Reportar Bug' : 'Compartilhar Ideia'}
+              {formType === 'bug' ? t.reportBug : t.shareIdea}
             </h3>
 
             {submitSuccess && (
               <div className={`success-message ${submitSuccess.type}`}>
-                <span>{submitSuccess.message}</span>
+                <span>{submitSuccess.type === 'bug' ? t.bugReported : t.thanksFeedback}</span>
                 {submitSuccess.issueUrl && (
                   <a href={submitSuccess.issueUrl} target="_blank" rel="noopener noreferrer">
-                    Ver no GitHub
+                    {t.viewOnGithub}
                   </a>
                 )}
               </div>
@@ -373,18 +481,18 @@ function BumbleBeeApp() {
                   className={`type-btn wishlist ${formType === 'wishlist' ? 'active' : ''}`}
                   onClick={() => setFormType('wishlist')}
                 >
-                  Ideia
+                  {t.idea}
                 </button>
                 <button
                   type="button"
                   className={`type-btn bug ${formType === 'bug' ? 'active' : ''}`}
                   onClick={() => setFormType('bug')}
                 >
-                  Bug
+                  {t.bug}
                 </button>
               </div>
               <div className="form-group">
-                <label className="form-label">Plataforma</label>
+                <label className="form-label">{t.platform}</label>
                 <div className="platform-selector">
                   <button
                     type="button"
@@ -405,16 +513,16 @@ function BumbleBeeApp() {
                     className={`platform-btn ${formPlatform === 'both' ? 'active' : ''}`}
                     onClick={() => setFormPlatform('both')}
                   >
-                    Ambos
+                    {t.both}
                   </button>
                 </div>
               </div>
               <div className="form-group">
-                <label className="form-label">Titulo</label>
+                <label className="form-label">{t.title}</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder={formType === 'bug' ? 'Ex: App trava ao abrir...' : 'Ex: Adicionar integracao com calendario...'}
+                  placeholder={formType === 'bug' ? t.titlePlaceholderBug : t.titlePlaceholderIdea}
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   maxLength={200}
@@ -422,21 +530,21 @@ function BumbleBeeApp() {
               </div>
               <div className="form-group">
                 <label className="form-label">
-                  {formType === 'bug' ? 'O que aconteceu?' : 'Descricao'}
+                  {formType === 'bug' ? t.whatHappened : t.description}
                 </label>
                 <textarea
                   className="form-textarea"
-                  placeholder={formType === 'bug' ? 'Descreva o problema que encontrou...' : 'Descreva sua ideia para o BumbleBee...'}
+                  placeholder={formType === 'bug' ? t.descPlaceholderBug : t.descPlaceholderIdea}
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
                 />
               </div>
               {formType === 'bug' && (
                 <div className="form-group">
-                  <label className="form-label">Passos para reproduzir (opcional)</label>
+                  <label className="form-label">{t.stepsToReproduce}</label>
                   <textarea
                     className="form-textarea"
-                    placeholder="1. Abri o app&#10;2. Cliquei em...&#10;3. O app travou"
+                    placeholder={t.stepsPlaceholder}
                     value={formSteps}
                     onChange={(e) => setFormSteps(e.target.value)}
                     rows={3}
@@ -444,11 +552,11 @@ function BumbleBeeApp() {
                 </div>
               )}
               <div className="form-group">
-                <label className="form-label">Seu nome ou X/Twitter (opcional)</label>
+                <label className="form-label">{t.nameOrX}</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="@seuhandle ou seu nome"
+                  placeholder={t.handlePlaceholder}
                   value={formXHandle}
                   onChange={(e) => setFormXHandle(e.target.value.replace('@', ''))}
                   maxLength={50}
@@ -459,17 +567,17 @@ function BumbleBeeApp() {
                 className="submit-btn"
                 disabled={submitting || !formTitle.trim() || !formDescription.trim()}
               >
-                {submitting ? 'Enviando...' : (formType === 'bug' ? 'Reportar Bug (+15 honey)' : 'Enviar Ideia (+10 honey)')}
+                {submitting ? t.submitting : (formType === 'bug' ? t.submitBug : t.submitIdea)}
               </button>
             </form>
           </div>
 
           <div className="sidebar-section">
-            <h3 className="sidebar-title">Top Contributors</h3>
+            <h3 className="sidebar-title">{t.topContributors}</h3>
             <div className="leaderboard">
               {leaderboard.length === 0 ? (
                 <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
-                  No contributors yet
+                  {t.noContributors}
                 </p>
               ) : (
                 leaderboard.map((user, index) => (
@@ -480,7 +588,7 @@ function BumbleBeeApp() {
                         {user.x_handle ? `@${user.x_handle}` : user.user_id.slice(0, 12)}
                       </div>
                       <div className="leaderboard-handle">
-                        {user.items_submitted} submissions
+                        {user.items_submitted} {t.submissions}
                       </div>
                     </div>
                     <span className="leaderboard-credits">+{user.credits_earned_total}</span>
@@ -491,7 +599,7 @@ function BumbleBeeApp() {
           </div>
 
           <div className="sidebar-section">
-            <h3 className="sidebar-title">How Ranking Works</h3>
+            <h3 className="sidebar-title">{t.howRanking}</h3>
             <div className="algorithm-card">
               {algorithm ? (
                 <>
@@ -506,13 +614,13 @@ function BumbleBeeApp() {
                       rel="noopener noreferrer"
                       className="algorithm-link"
                     >
-                      View on GitHub
+                      {t.viewOnGithub}
                     </a>
                   )}
                 </>
               ) : (
                 <p style={{ color: 'var(--text-muted)', fontSize: '13px' }}>
-                  Loading...
+                  {t.loading}
                 </p>
               )}
             </div>
