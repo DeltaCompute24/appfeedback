@@ -747,6 +747,12 @@ html, body {
   transform: translateY(-1px);
 }
 
+.download-hint {
+  color: #000;
+  font-size: 11px;
+  opacity: 0.7;
+}
+
 /* Success Message */
 .success-message {
   padding: 12px 16px;

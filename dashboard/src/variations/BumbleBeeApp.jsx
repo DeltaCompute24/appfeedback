@@ -240,17 +240,22 @@ function BumbleBeeApp() {
         <div className="download-content">
           <span className="download-label">Baixar BumbleBee:</span>
           <a
-            href="https://github.com/Delta-Compute/bumblebee/releases/latest/download/BumbleBee-Windows.exe"
+            href="https://github.com/Delta-Compute/bumblebee/actions/workflows/build-and-release.yml"
             className="download-btn windows"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Windows
           </a>
           <a
-            href="https://github.com/Delta-Compute/bumblebee/releases/latest/download/BumbleBee-macOS.dmg"
+            href="https://github.com/Delta-Compute/bumblebee/actions/workflows/build-and-release.yml"
             className="download-btn mac"
+            target="_blank"
+            rel="noopener noreferrer"
           >
             Mac
           </a>
+          <span className="download-hint">(clique no build mais recente, depois em Artifacts)</span>
         </div>
       </div>
 
