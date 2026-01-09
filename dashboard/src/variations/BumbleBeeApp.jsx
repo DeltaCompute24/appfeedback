@@ -236,6 +236,24 @@ function BumbleBeeApp() {
         </div>
       </header>
 
+      <div className="download-banner">
+        <div className="download-content">
+          <span className="download-label">Baixar BumbleBee:</span>
+          <a
+            href="https://github.com/Delta-Compute/bumblebee/releases/latest/download/BumbleBee-Windows.exe"
+            className="download-btn windows"
+          >
+            Windows
+          </a>
+          <a
+            href="https://github.com/Delta-Compute/bumblebee/releases/latest/download/BumbleBee-macOS.dmg"
+            className="download-btn mac"
+          >
+            Mac
+          </a>
+        </div>
+      </div>
+
       <nav className="tabs">
         <button
           className={`tab wishlist ${activeTab === 'wishlist' ? 'active' : ''}`}

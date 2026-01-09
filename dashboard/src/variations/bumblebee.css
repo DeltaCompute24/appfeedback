@@ -698,6 +698,55 @@ html, body {
   to { transform: rotate(360deg); }
 }
 
+/* Download Banner */
+.download-banner {
+  background: var(--gradient-primary);
+  padding: 12px 32px;
+  display: flex;
+  justify-content: center;
+}
+
+.download-content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.download-label {
+  color: #000;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.download-btn {
+  padding: 8px 20px;
+  border-radius: 6px;
+  font-weight: 600;
+  font-size: 13px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.download-btn.windows {
+  background: #0078d4;
+  color: white;
+}
+
+.download-btn.windows:hover {
+  background: #106ebe;
+  transform: translateY(-1px);
+}
+
+.download-btn.mac {
+  background: #333;
+  color: white;
+}
+
+.download-btn.mac:hover {
+  background: #555;
+  transform: translateY(-1px);
+}
+
 /* Success Message */
 .success-message {
   padding: 12px 16px;
