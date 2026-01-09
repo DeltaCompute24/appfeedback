@@ -9,6 +9,7 @@ from datetime import datetime
 from uuid import uuid4
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qs, urlparse
+from anthropic import Anthropic
 
 # GitHub configuration for auto-creating issues
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
@@ -40,7 +41,50 @@ def calculate_rank_score(item):
     created = datetime.fromisoformat(item["created_at"].replace("Z", ""))
     days_old = (datetime.utcnow() - created).days
     recency_factor = max(0, 1.0 - (days_old * 0.1 / 7))
-    return item["vote_count"] * 1.0 + recency_factor * 0.5
+
+    score = item["vote_count"] * 1.0 + recency_factor * 0.5
+
+    # Add AI scores if available
+    if item.get("ai_feasibility_score") is not None:
+        score += item["ai_feasibility_score"] * 0.3
+    if item.get("ai_impact_score") is not None:
+        score += item["ai_impact_score"] * 0.4
+    if item.get("ai_clarity_score") is not None:
+        score += item["ai_clarity_score"] * 0.2
+
+    return score
+
+
+def score_feedback_item(title, description, item_type):
+    """Score a feedback item using Claude API."""
+    api_key = os.environ.get('ANTHROPIC_API_KEY')
+    if not api_key:
+        return {"feasibility": None, "impact": None, "clarity": None}
+
+    try:
+        client = Anthropic(api_key=api_key)
+
+        prompt = f"""Score this {item_type} feedback item on three dimensions (0.0 to 1.0):
+
+Title: {title}
+Description: {description}
+
+Score each dimension:
+1. FEASIBILITY (0-1): How technically feasible? Consider complexity, resources needed, risk.
+2. IMPACT (0-1): How much user benefit? Consider users affected, frequency, pain severity.
+3. CLARITY (0-1): How well described? Consider completeness, reproducibility, examples.
+
+Respond ONLY with JSON: {{"feasibility": 0.X, "impact": 0.X, "clarity": 0.X}}"""
+
+        message = client.messages.create(
+            model="claude-sonnet-4-20250514",
+            max_tokens=100,
+            messages=[{"role": "user", "content": prompt}]
+        )
+
+        return json.loads(message.content[0].text)
+    except Exception:
+        return {"feasibility": None, "impact": None, "clarity": None}
 
 
 def create_github_issue(title, body, labels=None):
@@ -262,6 +306,13 @@ class handler(BaseHTTPRequestHandler):
                 )
                 if github_url:
                     item["github_issue_url"] = github_url
+
+            # Score with Claude AI
+            scores = score_feedback_item(data["title"], data["description"], data["item_type"])
+            item["ai_feasibility_score"] = scores.get("feasibility")
+            item["ai_impact_score"] = scores.get("impact")
+            item["ai_clarity_score"] = scores.get("clarity")
+            item["rank_score"] = calculate_rank_score(item)
 
             feedback_items.append(item)
 
