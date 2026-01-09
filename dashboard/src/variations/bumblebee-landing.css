@@ -1,0 +1,446 @@
+/* BumbleBee Landing Page Styles */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #f59e0b;
+  --primary-dark: #d97706;
+  --bg-dark: #0c0a09;
+  --bg-card: #1c1917;
+  --text-primary: #fafaf9;
+  --text-secondary: #a8a29e;
+  --windows-blue: #0078d4;
+  --mac-gray: #333;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.landing {
+  min-height: 100vh;
+}
+
+/* Hero Section */
+.hero {
+  background: linear-gradient(135deg, var(--bg-dark) 0%, #1a1512 100%);
+  padding: 80px 24px;
+  text-align: center;
+  border-bottom: 1px solid #292524;
+}
+
+.hero-content {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.logo-section {
+  margin-bottom: 40px;
+}
+
+.bee-icon {
+  width: 80px;
+  height: 80px;
+  background: var(--primary);
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40px;
+  font-weight: 700;
+  color: #000;
+  margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(245, 158, 11, 0.3);
+}
+
+.hero h1 {
+  font-size: 56px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  background: linear-gradient(135deg, var(--primary) 0%, #fbbf24 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  font-size: 24px;
+  color: var(--text-secondary);
+}
+
+.hero-features {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: var(--bg-card);
+  border-radius: 100px;
+  border: 1px solid #292524;
+}
+
+.feature-icon {
+  font-size: 20px;
+}
+
+/* Download Section */
+.download-section {
+  padding: 60px 24px;
+  display: flex;
+  justify-content: center;
+}
+
+.signup-card,
+.download-card {
+  background: var(--bg-card);
+  border: 1px solid #292524;
+  border-radius: 16px;
+  padding: 40px;
+  max-width: 500px;
+  width: 100%;
+  text-align: center;
+}
+
+.signup-card h2,
+.download-card h2 {
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.signup-card p {
+  color: var(--text-secondary);
+  margin-bottom: 24px;
+}
+
+.signup-form {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.signup-form input {
+  flex: 1;
+  padding: 14px 18px;
+  border: 1px solid #44403c;
+  border-radius: 8px;
+  background: var(--bg-dark);
+  color: var(--text-primary);
+  font-size: 16px;
+}
+
+.signup-form input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+.signup-form button {
+  padding: 14px 28px;
+  background: var(--primary);
+  color: #000;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.signup-form button:hover {
+  background: var(--primary-dark);
+}
+
+.signup-form button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.error-msg {
+  color: #ef4444;
+  margin-bottom: 12px;
+}
+
+.privacy-note {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* Download Buttons */
+.download-buttons {
+  display: flex;
+  gap: 16px;
+  margin: 32px 0;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.download-btn {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 32px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: white;
+  transition: transform 0.2s, box-shadow 0.2s;
+  min-width: 200px;
+}
+
+.download-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.download-btn.windows {
+  background: var(--windows-blue);
+}
+
+.download-btn.mac {
+  background: var(--mac-gray);
+}
+
+.btn-icon {
+  font-size: 32px;
+}
+
+.btn-text {
+  text-align: left;
+}
+
+.btn-text strong {
+  display: block;
+  font-size: 18px;
+}
+
+.btn-text small {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 13px;
+}
+
+/* Install Instructions */
+.install-instructions {
+  margin-top: 32px;
+  text-align: left;
+  background: var(--bg-dark);
+  border-radius: 12px;
+  padding: 24px;
+}
+
+.install-instructions h3 {
+  margin-bottom: 16px;
+  font-size: 16px;
+  color: var(--text-secondary);
+}
+
+.install-instructions details {
+  margin-bottom: 12px;
+}
+
+.install-instructions summary {
+  cursor: pointer;
+  padding: 12px 16px;
+  background: var(--bg-card);
+  border-radius: 8px;
+  font-weight: 600;
+}
+
+.install-instructions ol {
+  margin: 12px 0 0 24px;
+  color: var(--text-secondary);
+}
+
+.install-instructions li {
+  margin-bottom: 8px;
+}
+
+/* Feedback CTA */
+.feedback-cta {
+  margin-top: 32px;
+  padding-top: 24px;
+  border-top: 1px solid #292524;
+}
+
+.feedback-cta p {
+  color: var(--text-secondary);
+  margin-bottom: 12px;
+}
+
+.feedback-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.feedback-link:hover {
+  text-decoration: underline;
+}
+
+/* Features Section */
+.features-section {
+  padding: 80px 24px;
+  background: var(--bg-card);
+}
+
+.features-section h2 {
+  text-align: center;
+  font-size: 36px;
+  margin-bottom: 48px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.feature-card {
+  background: var(--bg-dark);
+  border: 1px solid #292524;
+  border-radius: 12px;
+  padding: 32px;
+  text-align: center;
+  transition: border-color 0.2s;
+}
+
+.feature-card:hover {
+  border-color: var(--primary);
+}
+
+.feature-card-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.feature-card h3 {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+
+.feature-card p {
+  color: var(--text-secondary);
+  font-size: 15px;
+}
+
+/* Commands Section */
+.commands-section {
+  padding: 80px 24px;
+  text-align: center;
+}
+
+.commands-section h2 {
+  font-size: 36px;
+  margin-bottom: 48px;
+}
+
+.commands-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 16px;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.command {
+  background: var(--bg-card);
+  border: 1px solid #292524;
+  border-radius: 100px;
+  padding: 12px 24px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--primary);
+}
+
+/* Footer */
+.footer {
+  background: var(--bg-card);
+  border-top: 1px solid #292524;
+  padding: 32px 24px;
+}
+
+.footer-content {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text-secondary);
+}
+
+.bee-icon-small {
+  width: 32px;
+  height: 32px;
+  background: var(--primary);
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #000;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+
+.footer-links a {
+  color: var(--text-secondary);
+  text-decoration: none;
+}
+
+.footer-links a:hover {
+  color: var(--primary);
+}
+
+/* Responsive */
+@media (max-width: 640px) {
+  .hero h1 {
+    font-size: 40px;
+  }
+
+  .tagline {
+    font-size: 18px;
+  }
+
+  .hero-features {
+    gap: 12px;
+  }
+
+  .signup-form {
+    flex-direction: column;
+  }
+
+  .download-buttons {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .download-btn {
+    width: 100%;
+    justify-content: center;
+  }
+}

@@ -21,6 +21,7 @@ votes = {}
 comments = {}
 user_credits = {}
 attachments = {}  # Store file attachments by feedback_id
+signups = []  # Email signups for downloads
 
 algorithm = {
     "id": str(uuid4()),
@@ -390,5 +391,16 @@ class handler(BaseHTTPRequestHandler):
             for item in feedback_items:
                 item["rank_score"] = calculate_rank_score(item)
             return json_response(self, {"message": f"Re-ranked {len(feedback_items)} items"})
+
+        # Email signups for downloads
+        if path == '/api/signups':
+            signup = {
+                "id": str(uuid4()),
+                "email": data.get("email"),
+                "source": data.get("source", "unknown"),
+                "timestamp": data.get("timestamp", datetime.utcnow().isoformat())
+            }
+            signups.append(signup)
+            return json_response(self, signup, 201)
 
         return json_response(self, {"detail": "Not found"}, 404)
