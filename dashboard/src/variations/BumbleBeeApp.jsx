@@ -33,8 +33,10 @@ function BumbleBeeApp() {
   const [formTitle, setFormTitle] = useState('')
   const [formDescription, setFormDescription] = useState('')
   const [formXHandle, setFormXHandle] = useState('')
-  const [formPlatform, setFormPlatform] = useState('both')
+  const [formPlatform, setFormPlatform] = useState('windows')
+  const [formSteps, setFormSteps] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [submitSuccess, setSubmitSuccess] = useState(null)
 
   const userId = getUserId()
 
@@ -121,8 +123,7 @@ function BumbleBeeApp() {
     if (!formTitle.trim() || !formDescription.trim()) return
 
     setSubmitting(true)
-    const platformLabel = formPlatform === 'mac' ? 'Mac' : formPlatform === 'windows' ? 'Windows' : 'Mac & Windows'
-    const descriptionWithPlatform = `[Platform: ${platformLabel}]\n\n${formDescription.trim()}`
+    setSubmitSuccess(null)
 
     try {
       const res = await fetch(`${API_BASE}/feedback`, {
@@ -131,17 +132,38 @@ function BumbleBeeApp() {
         body: JSON.stringify({
           item_type: formType,
           title: formTitle.trim(),
-          description: descriptionWithPlatform,
+          description: formDescription.trim(),
           user_id: userId,
-          x_handle: formXHandle.trim() || null
+          x_handle: formXHandle.trim() || null,
+          platform: formPlatform,
+          steps_to_reproduce: formType === 'bug' ? formSteps.trim() : ''
         })
       })
       if (res.ok) {
+        const result = await res.json()
         setFormTitle('')
         setFormDescription('')
+        setFormSteps('')
         fetchData()
         fetchStats()
         fetchUserCredits()
+
+        // Show success message
+        if (formType === 'bug' && result.github_issue_url) {
+          setSubmitSuccess({
+            type: 'bug',
+            message: 'Bug reportado com sucesso!',
+            issueUrl: result.github_issue_url
+          })
+        } else {
+          setSubmitSuccess({
+            type: formType,
+            message: formType === 'bug' ? 'Bug reportado!' : 'Obrigado pelo feedback!'
+          })
+        }
+
+        // Clear success message after 5 seconds
+        setTimeout(() => setSubmitSuccess(null), 5000)
       }
     } catch (err) {
       console.error('Failed to submit:', err)
@@ -311,7 +333,21 @@ function BumbleBeeApp() {
 
         <aside className="sidebar">
           <div className="sidebar-section">
-            <h3 className="sidebar-title">Share Your Ideas</h3>
+            <h3 className="sidebar-title">
+              {formType === 'bug' ? 'Reportar Bug' : 'Compartilhar Ideia'}
+            </h3>
+
+            {submitSuccess && (
+              <div className={`success-message ${submitSuccess.type}`}>
+                <span>{submitSuccess.message}</span>
+                {submitSuccess.issueUrl && (
+                  <a href={submitSuccess.issueUrl} target="_blank" rel="noopener noreferrer">
+                    Ver no GitHub
+                  </a>
+                )}
+              </div>
+            )}
+
             <form className="submit-form" onSubmit={handleSubmit}>
               <div className="type-selector">
                 <button
@@ -319,7 +355,7 @@ function BumbleBeeApp() {
                   className={`type-btn wishlist ${formType === 'wishlist' ? 'active' : ''}`}
                   onClick={() => setFormType('wishlist')}
                 >
-                  Feature
+                  Ideia
                 </button>
                 <button
                   type="button"
@@ -330,15 +366,8 @@ function BumbleBeeApp() {
                 </button>
               </div>
               <div className="form-group">
-                <label className="form-label">Platform</label>
+                <label className="form-label">Plataforma</label>
                 <div className="platform-selector">
-                  <button
-                    type="button"
-                    className={`platform-btn ${formPlatform === 'mac' ? 'active' : ''}`}
-                    onClick={() => setFormPlatform('mac')}
-                  >
-                    Mac
-                  </button>
                   <button
                     type="button"
                     className={`platform-btn ${formPlatform === 'windows' ? 'active' : ''}`}
@@ -348,39 +377,60 @@ function BumbleBeeApp() {
                   </button>
                   <button
                     type="button"
+                    className={`platform-btn ${formPlatform === 'mac' ? 'active' : ''}`}
+                    onClick={() => setFormPlatform('mac')}
+                  >
+                    Mac
+                  </button>
+                  <button
+                    type="button"
                     className={`platform-btn ${formPlatform === 'both' ? 'active' : ''}`}
                     onClick={() => setFormPlatform('both')}
                   >
-                    Both
+                    Ambos
                   </button>
                 </div>
               </div>
               <div className="form-group">
-                <label className="form-label">Title</label>
+                <label className="form-label">Titulo</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="e.g., Add calendar integration..."
+                  placeholder={formType === 'bug' ? 'Ex: App trava ao abrir...' : 'Ex: Adicionar integracao com calendario...'}
                   value={formTitle}
                   onChange={(e) => setFormTitle(e.target.value)}
                   maxLength={200}
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Description</label>
+                <label className="form-label">
+                  {formType === 'bug' ? 'O que aconteceu?' : 'Descricao'}
+                </label>
                 <textarea
                   className="form-textarea"
-                  placeholder="Describe what you'd like BumbleBee to do..."
+                  placeholder={formType === 'bug' ? 'Descreva o problema que encontrou...' : 'Descreva sua ideia para o BumbleBee...'}
                   value={formDescription}
                   onChange={(e) => setFormDescription(e.target.value)}
                 />
               </div>
+              {formType === 'bug' && (
+                <div className="form-group">
+                  <label className="form-label">Passos para reproduzir (opcional)</label>
+                  <textarea
+                    className="form-textarea"
+                    placeholder="1. Abri o app&#10;2. Cliquei em...&#10;3. O app travou"
+                    value={formSteps}
+                    onChange={(e) => setFormSteps(e.target.value)}
+                    rows={3}
+                  />
+                </div>
+              )}
               <div className="form-group">
-                <label className="form-label">X Handle (optional)</label>
+                <label className="form-label">Seu nome ou X/Twitter (opcional)</label>
                 <input
                   type="text"
                   className="form-input"
-                  placeholder="@yourhandle"
+                  placeholder="@seuhandle ou seu nome"
                   value={formXHandle}
                   onChange={(e) => setFormXHandle(e.target.value.replace('@', ''))}
                   maxLength={50}
@@ -391,7 +441,7 @@ function BumbleBeeApp() {
                 className="submit-btn"
                 disabled={submitting || !formTitle.trim() || !formDescription.trim()}
               >
-                {submitting ? 'Submitting...' : 'Submit Feedback'}
+                {submitting ? 'Enviando...' : (formType === 'bug' ? 'Reportar Bug (+15 honey)' : 'Enviar Ideia (+10 honey)')}
               </button>
             </form>
           </div>

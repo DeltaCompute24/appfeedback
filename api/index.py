@@ -3,16 +3,23 @@ Vercel Serverless API Handler for AppFeedback
 Simple HTTP handler without FastAPI for maximum compatibility
 """
 import json
+import os
+import base64
 from datetime import datetime
 from uuid import uuid4
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import parse_qs, urlparse
+
+# GitHub configuration for auto-creating issues
+GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
+GITHUB_REPO = os.environ.get('GITHUB_REPO', 'Delta-Compute/bumblebee')
 
 # In-memory storage for demo
 feedback_items = []
 votes = {}
 comments = {}
 user_credits = {}
+attachments = {}  # Store file attachments by feedback_id
 
 algorithm = {
     "id": str(uuid4()),
@@ -34,6 +41,40 @@ def calculate_rank_score(item):
     days_old = (datetime.utcnow() - created).days
     recency_factor = max(0, 1.0 - (days_old * 0.1 / 7))
     return item["vote_count"] * 1.0 + recency_factor * 0.5
+
+
+def create_github_issue(title, body, labels=None):
+    """Create a GitHub issue for bug reports"""
+    if not GITHUB_TOKEN:
+        return None, "GitHub token not configured"
+
+    try:
+        import urllib.request
+
+        url = f"https://api.github.com/repos/{GITHUB_REPO}/issues"
+        data = {
+            "title": title,
+            "body": body,
+            "labels": labels or ["bug", "user-reported", "from-feedback-site"]
+        }
+
+        req = urllib.request.Request(
+            url,
+            data=json.dumps(data).encode('utf-8'),
+            headers={
+                'Authorization': f'token {GITHUB_TOKEN}',
+                'Accept': 'application/vnd.github.v3+json',
+                'Content-Type': 'application/json',
+                'User-Agent': 'AppFeedback-Bot'
+            },
+            method='POST'
+        )
+
+        with urllib.request.urlopen(req) as response:
+            result = json.loads(response.read().decode('utf-8'))
+            return result.get('html_url'), None
+    except Exception as e:
+        return None, str(e)
 
 
 def json_response(handler, data, status=200):
@@ -158,6 +199,13 @@ class handler(BaseHTTPRequestHandler):
         if path == '/api/feedback':
             item_id = str(uuid4())
             now = datetime.utcnow().isoformat()
+
+            # Bug-specific fields
+            is_bug = data["item_type"] == "bug"
+            platform = data.get("platform", "unknown")
+            app_version = data.get("app_version", "unknown")
+            steps_to_reproduce = data.get("steps_to_reproduce", "")
+
             item = {
                 "id": item_id,
                 "item_type": data["item_type"],
@@ -176,12 +224,51 @@ class handler(BaseHTTPRequestHandler):
                 "created_at": now,
                 "updated_at": now,
                 "comment_count": 0,
-                "user_voted": None
+                "user_voted": None,
+                "platform": platform,
+                "app_version": app_version,
+                "steps_to_reproduce": steps_to_reproduce,
+                "github_issue_url": None
             }
+
+            # For bug reports, create GitHub issue
+            if is_bug and GITHUB_TOKEN:
+                issue_body = f"""## Bug Report from Feedback Site
+
+**Platform:** {platform}
+**App Version:** {app_version}
+**Submitted by:** {data.get('x_handle') or data['user_id'][:12]}
+
+### Description
+{data['description']}
+
+### Steps to Reproduce
+{steps_to_reproduce or 'Not provided'}
+
+---
+*This issue was auto-created from the [BumbleBee Feedback Site](https://appfeedback-one.vercel.app/?variant=bumblebee)*
+*Feedback ID: {item_id}*
+"""
+                labels = ["bug", "user-reported", "from-feedback-site"]
+                if platform == "windows":
+                    labels.append("windows")
+                elif platform == "mac":
+                    labels.append("macos")
+
+                github_url, error = create_github_issue(
+                    f"[User Report] {data['title']}",
+                    issue_body,
+                    labels
+                )
+                if github_url:
+                    item["github_issue_url"] = github_url
+
             feedback_items.append(item)
 
-            # Award credits
+            # Award credits (bugs get bonus for helping debug)
             user_id = data["user_id"]
+            credits_to_award = 15 if is_bug else 10  # Bugs get bonus
+
             if user_id not in user_credits:
                 user_credits[user_id] = {
                     "id": str(uuid4()),
@@ -193,8 +280,8 @@ class handler(BaseHTTPRequestHandler):
                     "items_developed": 0,
                     "created_at": now
                 }
-            user_credits[user_id]["credits_balance"] += 10
-            user_credits[user_id]["credits_earned_total"] += 10
+            user_credits[user_id]["credits_balance"] += credits_to_award
+            user_credits[user_id]["credits_earned_total"] += credits_to_award
             user_credits[user_id]["items_submitted"] += 1
             if data.get("x_handle"):
                 user_credits[user_id]["x_handle"] = data.get("x_handle")
