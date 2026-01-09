@@ -33,6 +33,7 @@ function BumbleBeeApp() {
   const [formTitle, setFormTitle] = useState('')
   const [formDescription, setFormDescription] = useState('')
   const [formXHandle, setFormXHandle] = useState('')
+  const [formPlatform, setFormPlatform] = useState('both')
   const [submitting, setSubmitting] = useState(false)
 
   const userId = getUserId()
@@ -120,6 +121,9 @@ function BumbleBeeApp() {
     if (!formTitle.trim() || !formDescription.trim()) return
 
     setSubmitting(true)
+    const platformLabel = formPlatform === 'mac' ? 'Mac' : formPlatform === 'windows' ? 'Windows' : 'Mac & Windows'
+    const descriptionWithPlatform = `[Platform: ${platformLabel}]\n\n${formDescription.trim()}`
+
     try {
       const res = await fetch(`${API_BASE}/feedback`, {
         method: 'POST',
@@ -127,7 +131,7 @@ function BumbleBeeApp() {
         body: JSON.stringify({
           item_type: formType,
           title: formTitle.trim(),
-          description: formDescription.trim(),
+          description: descriptionWithPlatform,
           user_id: userId,
           x_handle: formXHandle.trim() || null
         })
@@ -189,7 +193,7 @@ function BumbleBeeApp() {
             <div className="logo-text">
               <span>BumbleBee</span> Feedback
             </div>
-            <div className="logo-subtitle">Voice AI Assistant for Mac</div>
+            <div className="logo-subtitle">Voice AI Assistant for Mac & Windows</div>
           </div>
         </div>
         <div className="header-actions">
@@ -324,6 +328,32 @@ function BumbleBeeApp() {
                 >
                   Bug
                 </button>
+              </div>
+              <div className="form-group">
+                <label className="form-label">Platform</label>
+                <div className="platform-selector">
+                  <button
+                    type="button"
+                    className={`platform-btn ${formPlatform === 'mac' ? 'active' : ''}`}
+                    onClick={() => setFormPlatform('mac')}
+                  >
+                    Mac
+                  </button>
+                  <button
+                    type="button"
+                    className={`platform-btn ${formPlatform === 'windows' ? 'active' : ''}`}
+                    onClick={() => setFormPlatform('windows')}
+                  >
+                    Windows
+                  </button>
+                  <button
+                    type="button"
+                    className={`platform-btn ${formPlatform === 'both' ? 'active' : ''}`}
+                    onClick={() => setFormPlatform('both')}
+                  >
+                    Both
+                  </button>
+                </div>
               </div>
               <div className="form-group">
                 <label className="form-label">Title</label>
