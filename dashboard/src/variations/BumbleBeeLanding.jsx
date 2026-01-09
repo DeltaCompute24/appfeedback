@@ -1,54 +1,85 @@
 import { useState, useEffect } from 'react'
 import './bumblebee-landing.css'
 
-const API_BASE = '/api'
+// B2Bee API for authentication
+const B2BEE_API = 'https://b2bee.tech'
 
 function BumbleBeeLanding() {
-  const [email, setEmail] = useState('')
-  const [submitted, setSubmitted] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [error, setError] = useState('')
+  // Auth state
+  const [user, setUser] = useState(null)
+  const [apiKey, setApiKey] = useState(null)
+  const [authMode, setAuthMode] = useState('login') // 'login' or 'signup'
+  const [authLoading, setAuthLoading] = useState(false)
+  const [authError, setAuthError] = useState('')
 
-  // Check if already signed up (localStorage)
+  // Form state
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [name, setName] = useState('')
+
+  // Check for existing session on mount
   useEffect(() => {
-    const hasAccess = localStorage.getItem('bumblebee_download_access')
-    if (hasAccess) {
-      setSubmitted(true)
+    const savedUser = localStorage.getItem('bumblebee_user')
+    const savedApiKey = localStorage.getItem('bumblebee_api_key')
+    if (savedUser && savedApiKey) {
+      setUser(JSON.parse(savedUser))
+      setApiKey(savedApiKey)
     }
   }, [])
 
-  async function handleSubmit(e) {
+  async function handleAuth(e) {
     e.preventDefault()
-    if (!email.trim()) return
-
-    setSubmitting(true)
-    setError('')
+    setAuthLoading(true)
+    setAuthError('')
 
     try {
-      const res = await fetch(`${API_BASE}/signups`, {
+      const endpoint = authMode === 'signup'
+        ? `${B2BEE_API}/api/public/auth/signup`
+        : `${B2BEE_API}/api/public/auth/login`
+
+      const body = authMode === 'signup'
+        ? { email: email.trim(), password, name: name.trim() }
+        : { email: email.trim(), password }
+
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          email: email.trim(),
-          source: 'bumblebee-landing',
-          timestamp: new Date().toISOString()
-        })
+        body: JSON.stringify(body)
       })
 
-      if (res.ok || res.status === 201) {
-        localStorage.setItem('bumblebee_download_access', 'true')
-        localStorage.setItem('bumblebee_user_email', email.trim())
-        setSubmitted(true)
-      } else {
-        setError('Algo deu errado. Tente novamente.')
+      const data = await res.json()
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Erro na autenticacao')
       }
+
+      // Save user and API key
+      localStorage.setItem('bumblebee_user', JSON.stringify(data.user))
+      localStorage.setItem('bumblebee_api_key', data.apiKey)
+      setUser(data.user)
+      setApiKey(data.apiKey)
+
+      // Clear form
+      setEmail('')
+      setPassword('')
+      setName('')
     } catch (err) {
-      // Even if API fails, grant access (fail open for better UX)
-      localStorage.setItem('bumblebee_download_access', 'true')
-      setSubmitted(true)
+      setAuthError(err.message || 'Erro na autenticacao. Tente novamente.')
     }
 
-    setSubmitting(false)
+    setAuthLoading(false)
+  }
+
+  function handleLogout() {
+    localStorage.removeItem('bumblebee_user')
+    localStorage.removeItem('bumblebee_api_key')
+    setUser(null)
+    setApiKey(null)
+  }
+
+  function copyApiKey() {
+    navigator.clipboard.writeText(apiKey)
+    // Could add a toast notification here
   }
 
   return (
@@ -79,128 +110,146 @@ function BumbleBeeLanding() {
         </div>
       </header>
 
-      {/* Download Section */}
+      {/* Download Section - Always visible */}
       <section className="download-section">
-        {!submitted ? (
-          <div className="signup-card">
-            <h2>Baixe o BumbleBee Gratis</h2>
-            <p>Digite seu email para acessar o download</p>
+        <div className="download-card">
+          <h2>Baixe o BumbleBee Gratis</h2>
+          <p className="download-subtitle">Disponivel para Windows e macOS</p>
 
-            <form onSubmit={handleSubmit} className="signup-form">
+          <div className="download-buttons">
+            <a
+              href="https://pub-bumblebee.b2bee.tech/latest/BumbleBee-Windows.exe"
+              className="download-btn windows"
+            >
+              <span className="btn-icon">⊞</span>
+              <span className="btn-text">
+                <strong>Windows</strong>
+                <small>Windows 10/11</small>
+              </span>
+            </a>
+
+            <a
+              href="https://pub-bumblebee.b2bee.tech/latest/BumbleBee-macOS.dmg"
+              className="download-btn mac"
+            >
+              <span className="btn-icon">🍎</span>
+              <span className="btn-text">
+                <strong>macOS</strong>
+                <small>macOS 12+</small>
+              </span>
+            </a>
+          </div>
+
+          {/* Platform-specific install tips */}
+          <div className="install-instructions">
+            <h3>Dicas de Instalacao:</h3>
+            <div className="instructions-tabs">
+              <details>
+                <summary>Windows</summary>
+                <ol>
+                  <li>Se aparecer aviso do Windows, clique "Mais informacoes" e "Executar assim mesmo"</li>
+                  <li>Procure o icone da abelha na bandeja do sistema (canto inferior direito)</li>
+                </ol>
+              </details>
+              <details>
+                <summary>macOS</summary>
+                <ol>
+                  <li>Abra o DMG e arraste para Applications</li>
+                  <li>Na primeira vez: clique direito no app e "Abrir"</li>
+                  <li>Conceda permissoes de Gravacao de Tela e Acessibilidade</li>
+                </ol>
+              </details>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* API Key Section - Auth required */}
+      <section className="api-key-section">
+        {!user ? (
+          <div className="auth-card">
+            <h2>Ative o BumbleBee</h2>
+            <p className="auth-subtitle">Crie sua conta gratuita para obter sua API Key</p>
+
+            <div className="auth-tabs">
+              <button
+                className={`auth-tab ${authMode === 'login' ? 'active' : ''}`}
+                onClick={() => { setAuthMode('login'); setAuthError(''); }}
+              >
+                Entrar
+              </button>
+              <button
+                className={`auth-tab ${authMode === 'signup' ? 'active' : ''}`}
+                onClick={() => { setAuthMode('signup'); setAuthError(''); }}
+              >
+                Criar Conta
+              </button>
+            </div>
+
+            <form onSubmit={handleAuth} className="auth-form">
+              {authMode === 'signup' && (
+                <input
+                  type="text"
+                  placeholder="Seu nome"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  disabled={authLoading}
+                />
+              )}
               <input
                 type="email"
                 placeholder="seu@email.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                disabled={submitting}
+                disabled={authLoading}
               />
-              <button type="submit" disabled={submitting || !email.trim()}>
-                {submitting ? 'Enviando...' : 'Obter Download'}
+              <input
+                type="password"
+                placeholder="Senha"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                minLength={6}
+                disabled={authLoading}
+              />
+
+              {authError && <p className="auth-error">{authError}</p>}
+
+              <button type="submit" disabled={authLoading} className="auth-submit">
+                {authLoading
+                  ? 'Carregando...'
+                  : authMode === 'signup' ? 'Criar Conta' : 'Entrar'
+                }
               </button>
             </form>
-
-            {error && <p className="error-msg">{error}</p>}
-
-            <p className="privacy-note">
-              Usaremos seu email apenas para avisar sobre atualizacoes importantes.
-            </p>
           </div>
         ) : (
-          <div className="download-card">
-            <h2>Pronto! Escolha sua versao:</h2>
-
-            <div className="download-buttons">
-              <a
-                href="https://pub-bumblebee.b2bee.tech/latest/BumbleBee-Windows.exe"
-                className="download-btn windows"
-              >
-                <span className="btn-icon">⊞</span>
-                <span className="btn-text">
-                  <strong>Windows</strong>
-                  <small>Windows 10/11</small>
-                </span>
-              </a>
-
-              <a
-                href="https://pub-bumblebee.b2bee.tech/latest/BumbleBee-macOS.dmg"
-                className="download-btn mac"
-              >
-                <span className="btn-icon">🍎</span>
-                <span className="btn-text">
-                  <strong>macOS</strong>
-                  <small>macOS 12+</small>
-                </span>
-              </a>
+          <div className="api-key-card">
+            <div className="user-welcome">
+              <span>Ola, {user.name || user.email}!</span>
+              <button onClick={handleLogout} className="logout-btn">Sair</button>
             </div>
 
-            {/* Setup Instructions */}
-            <div className="setup-section">
-              <h3>Como Configurar</h3>
+            <h2>Sua API Key</h2>
+            <p className="api-key-subtitle">Cole esta chave nas configuracoes do BumbleBee</p>
 
-              <div className="setup-steps">
-                <div className="setup-step">
-                  <div className="step-number">1</div>
-                  <div className="step-content">
-                    <strong>Instale o app</strong>
-                    <p>Execute o instalador e siga as instrucoes</p>
-                  </div>
-                </div>
-
-                <div className="setup-step">
-                  <div className="step-number">2</div>
-                  <div className="step-content">
-                    <strong>Crie sua conta gratuita</strong>
-                    <p>
-                      <a href="https://b2bee.tech/signup" target="_blank" rel="noopener noreferrer" className="setup-link">
-                        Criar conta no B2Bee
-                      </a>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="setup-step">
-                  <div className="step-number">3</div>
-                  <div className="step-content">
-                    <strong>Pegue sua API Key</strong>
-                    <p>
-                      <a href="https://b2bee.tech/profile" target="_blank" rel="noopener noreferrer" className="setup-link">
-                        Acessar Configuracoes do Perfil
-                      </a>
-                    </p>
-                  </div>
-                </div>
-
-                <div className="setup-step">
-                  <div className="step-number">4</div>
-                  <div className="step-content">
-                    <strong>Cole a API Key no app</strong>
-                    <p>Clique no icone da abelha e va em "Configuracoes"</p>
-                  </div>
-                </div>
-              </div>
+            <div className="api-key-display">
+              <code>{apiKey}</code>
+              <button onClick={copyApiKey} className="copy-btn" title="Copiar">
+                📋
+              </button>
             </div>
 
-            {/* Platform-specific install tips */}
-            <div className="install-instructions">
-              <h3>Dicas de Instalacao:</h3>
-              <div className="instructions-tabs">
-                <details>
-                  <summary>Windows</summary>
-                  <ol>
-                    <li>Se aparecer aviso do Windows, clique "Mais informacoes" e "Executar assim mesmo"</li>
-                    <li>Procure o icone da abelha na bandeja do sistema (canto inferior direito)</li>
-                  </ol>
-                </details>
-                <details>
-                  <summary>macOS</summary>
-                  <ol>
-                    <li>Abra o DMG e arraste para Applications</li>
-                    <li>Na primeira vez: clique direito no app e "Abrir"</li>
-                    <li>Conceda permissoes de Gravacao de Tela e Acessibilidade</li>
-                  </ol>
-                </details>
-              </div>
+            <div className="setup-reminder">
+              <strong>Como usar:</strong>
+              <ol>
+                <li>Abra o BumbleBee no seu computador</li>
+                <li>Clique no icone da abelha</li>
+                <li>Va em "Configuracoes"</li>
+                <li>Cole sua API Key</li>
+              </ol>
             </div>
           </div>
         )}
@@ -310,7 +359,7 @@ function BumbleBeeLanding() {
         </div>
       </section>
 
-      {/* Footer - Clean, no B2Bee branding */}
+      {/* Footer */}
       <footer className="footer">
         <div className="footer-content">
           <div className="footer-brand">
