@@ -296,7 +296,7 @@ function BumbleBeeLanding() {
           </a>
 
           <p className="beta-note">
-            Seus creditos Honey podem ser trocados por recursos premium!
+            BumbleBee e open source! Seus creditos Honey podem ser trocados por creditos de uso gratuito.
           </p>
         </div>
       </section>
