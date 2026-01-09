@@ -84,7 +84,7 @@ function BumbleBeeLanding() {
         {!submitted ? (
           <div className="signup-card">
             <h2>Baixe o BumbleBee Gratis</h2>
-            <p>Digite seu email para receber o link de download</p>
+            <p>Digite seu email para acessar o download</p>
 
             <form onSubmit={handleSubmit} className="signup-form">
               <input
@@ -134,22 +134,67 @@ function BumbleBeeLanding() {
               </a>
             </div>
 
+            {/* Setup Instructions */}
+            <div className="setup-section">
+              <h3>Como Configurar</h3>
+
+              <div className="setup-steps">
+                <div className="setup-step">
+                  <div className="step-number">1</div>
+                  <div className="step-content">
+                    <strong>Instale o app</strong>
+                    <p>Execute o instalador e siga as instrucoes</p>
+                  </div>
+                </div>
+
+                <div className="setup-step">
+                  <div className="step-number">2</div>
+                  <div className="step-content">
+                    <strong>Crie sua conta gratuita</strong>
+                    <p>
+                      <a href="https://b2bee.tech/signup" target="_blank" rel="noopener noreferrer" className="setup-link">
+                        Criar conta no B2Bee
+                      </a>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="setup-step">
+                  <div className="step-number">3</div>
+                  <div className="step-content">
+                    <strong>Pegue sua API Key</strong>
+                    <p>
+                      <a href="https://b2bee.tech/profile" target="_blank" rel="noopener noreferrer" className="setup-link">
+                        Acessar Configuracoes do Perfil
+                      </a>
+                    </p>
+                  </div>
+                </div>
+
+                <div className="setup-step">
+                  <div className="step-number">4</div>
+                  <div className="step-content">
+                    <strong>Cole a API Key no app</strong>
+                    <p>Clique no icone da abelha e va em "Configuracoes"</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Platform-specific install tips */}
             <div className="install-instructions">
-              <h3>Como instalar:</h3>
+              <h3>Dicas de Instalacao:</h3>
               <div className="instructions-tabs">
-                <details open>
+                <details>
                   <summary>Windows</summary>
                   <ol>
-                    <li>Baixe o arquivo .exe</li>
-                    <li>Clique duas vezes para instalar</li>
                     <li>Se aparecer aviso do Windows, clique "Mais informacoes" e "Executar assim mesmo"</li>
-                    <li>Procure o icone da abelha na bandeja do sistema</li>
+                    <li>Procure o icone da abelha na bandeja do sistema (canto inferior direito)</li>
                   </ol>
                 </details>
                 <details>
                   <summary>macOS</summary>
                   <ol>
-                    <li>Baixe o arquivo .dmg</li>
                     <li>Abra o DMG e arraste para Applications</li>
                     <li>Na primeira vez: clique direito no app e "Abrir"</li>
                     <li>Conceda permissoes de Gravacao de Tela e Acessibilidade</li>
@@ -157,15 +202,54 @@ function BumbleBeeLanding() {
                 </details>
               </div>
             </div>
-
-            <div className="feedback-cta">
-              <p>Encontrou um problema ou tem uma sugestao?</p>
-              <a href="https://appfeedback-one.vercel.app/?variant=bumblebee" className="feedback-link">
-                Enviar Feedback (e ganhar creditos!)
-              </a>
-            </div>
           </div>
         )}
+      </section>
+
+      {/* Beta Evaluation Program */}
+      <section className="beta-section">
+        <div className="beta-card">
+          <div className="beta-badge">BETA</div>
+          <h2>Programa de Avaliacao Beta</h2>
+          <p className="beta-subtitle">Ajude a melhorar o BumbleBee e ganhe recompensas!</p>
+
+          <div className="rewards-grid">
+            <div className="reward-item">
+              <span className="reward-icon">🐝</span>
+              <span className="reward-text">
+                <strong>+15 Honey</strong>
+                <small>por bug reportado</small>
+              </span>
+            </div>
+            <div className="reward-item">
+              <span className="reward-icon">💡</span>
+              <span className="reward-text">
+                <strong>+10 Honey</strong>
+                <small>por sugestao</small>
+              </span>
+            </div>
+            <div className="reward-item">
+              <span className="reward-icon">⭐</span>
+              <span className="reward-text">
+                <strong>+50 Honey</strong>
+                <small>por feedback de alto impacto</small>
+              </span>
+            </div>
+          </div>
+
+          <a
+            href="https://appfeedback-one.vercel.app/?variant=bumblebee"
+            className="beta-cta"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Participar do Programa Beta
+          </a>
+
+          <p className="beta-note">
+            Seus creditos Honey podem ser trocados por recursos premium!
+          </p>
+        </div>
       </section>
 
       {/* Features Section */}
@@ -226,16 +310,16 @@ function BumbleBeeLanding() {
         </div>
       </section>
 
-      {/* Footer */}
+      {/* Footer - Clean, no B2Bee branding */}
       <footer className="footer">
         <div className="footer-content">
           <div className="footer-brand">
             <span className="bee-icon-small">B</span>
-            <span>BumbleBee by B2Bee.tech</span>
+            <span>BumbleBee</span>
           </div>
           <div className="footer-links">
             <a href="https://appfeedback-one.vercel.app/?variant=bumblebee">Feedback</a>
-            <a href="https://b2bee.tech">B2Bee.tech</a>
+            <a href="mailto:support@bumblebee.app">Suporte</a>
           </div>
         </div>
       </footer>
