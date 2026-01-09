@@ -118,7 +118,7 @@ function BumbleBeeLanding() {
 
           <div className="download-buttons">
             <a
-              href="https://pub-bumblebee.b2bee.tech/latest/BumbleBee-Windows.exe"
+              href="https://pub-5cec4c07c618467e97486ac887ce3606.r2.dev/latest/BumbleBee-Windows.exe"
               className="download-btn windows"
             >
               <span className="btn-icon">⊞</span>
@@ -129,7 +129,7 @@ function BumbleBeeLanding() {
             </a>
 
             <a
-              href="https://pub-bumblebee.b2bee.tech/latest/BumbleBee-macOS.dmg"
+              href="https://pub-5cec4c07c618467e97486ac887ce3606.r2.dev/latest/BumbleBee-macOS.dmg"
               className="download-btn mac"
             >
               <span className="btn-icon">🍎</span>
